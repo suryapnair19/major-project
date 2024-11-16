@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Mask Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Face Mask Detection</h1>
+        <p>Upload an image to check if the person is wearing a mask or not.</p>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="file" accept="image/*" required>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the form from submitting normally
+
+            let formData = new FormData();  // Create a new FormData object
+            let fileInput = document.getElementById('fileInput');  // Get the file input element
+            formData.append("file", fileInput.files[0]);  // Append the selected file to the FormData
+
+            // Make a POST request to the Flask /predict route
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // Parse the response as JSON
+            .then(data => {
+                // Display the prediction result
+                document.getElementById('result').textContent = 'Prediction: ' + data.prediction;
+            })
+            .catch(error => {
+                // Handle any errors that occur during the fetch request
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            });
+        });
+    </script>
+
+</body>
+</html>
